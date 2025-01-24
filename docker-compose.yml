@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  master:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jmeter-master
+    hostname: master
+    environment:
+      - JMETER_VERSION=${JMETER_VERSION}
+      - JMETER_DIR=/opt/apache-jmeter-${JMETER_VERSION}
+      - TEST_PLAN_PATH=${TEST_PLAN_PATH}
+      - RESULT_PATH=${RESULT_PATH}
+    volumes:
+      - ./test-files:/test-files
+    networks:
+      jmeter-net:
+        ipv4_address: 192.168.1.100
+    ports:
+      - "2222:22"
+
+  slave1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jmeter-slave1
+    hostname: slave1
+    environment:
+      - JMETER_VERSION=${JMETER_VERSION}
+      - JMETER_DIR=/opt/apache-jmeter-${JMETER_VERSION}
+    networks:
+      jmeter-net:
+        ipv4_address: 192.168.1.101
+    ports:
+      - "2223:22"
+
+  slave2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jmeter-slave2
+    hostname: slave2
+    environment:
+      - JMETER_VERSION=${JMETER_VERSION}
+      - JMETER_DIR=/opt/apache-jmeter-${JMETER_VERSION}
+    networks:
+      jmeter-net:
+        ipv4_address: 192.168.1.102
+    ports:
+      - "2224:22"
+
+networks:
+  jmeter-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
