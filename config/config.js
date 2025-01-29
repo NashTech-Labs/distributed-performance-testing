@@ -9,5 +9,6 @@ module.exports = {
     testPlanPath: process.env.TEST_PLAN_PATH,
     resultPath: process.env.RESULT_PATH,
     username: process.env.SSH_USERNAME,
-    password: process.env.SSH_PASSWORD
+    password: process.env.SSH_PASSWORD,
+    numberOfThreads: process.env.NUMBER_OF_THREADS
 };

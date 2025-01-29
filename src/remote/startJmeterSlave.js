@@ -1,10 +1,11 @@
 const { exec } = require('child_process');
 const executeBackgroundCommand = require('../commands/executeBackgroundCommand');
+const executeCommand = require('../commands/executeCommand');
 const config = require('../../config/config'); 
 
 function startJMeterSlave(ip, serverPort, port, callback) {
     console.log(`Checking port ${serverPort} availability for slave on ${ip}...`);
-    checkPortAvailability(serverPort, (err) => {
+    checkPortAvailability(ip, serverPort, (err) => {
         if (err) {
             console.error(`Port check failed: ${err.message}`);
             return callback(err);
@@ -23,17 +24,23 @@ function startJMeterSlave(ip, serverPort, port, callback) {
     });
 }
 
-function checkPortAvailability(port, callback) {
+function checkPortAvailability(ip, port, callback) {
     const findCommand = `netstat -tuln | grep ${port}`;
     const killCommand = `lsof -ti:${port} | xargs -r kill -9`;
 
     // Check if the port is in use
-    exec(findCommand, (err, stdout) => {
+    executeCommand(ip, findCommand, (err, stdout, stderr) => {
+        console.log("stdout : ", stdout);
+        if (err) {
+            console.error("Error executing command:", err.message);
+            callback(err);
+            return;
+        }
         if (stdout && stdout.includes(port)) {
             console.log(`Port ${port} is in use. Attempting to free it...`);
 
             // Kill processes using the port
-            exec(killCommand, (killErr) => {
+            executeCommand(ip, killCommand, (killErr) => {
                 if (killErr) {
                     console.error(`Failed to kill processes on port ${port}:`, killErr.message);
                     callback(killErr);

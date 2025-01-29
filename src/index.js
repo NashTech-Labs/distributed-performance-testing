@@ -125,12 +125,12 @@ async function run() {
         }
 
         console.log('Starting JMeter slaves...');
-        const slavePorts = [4001, 4002];
-        const serverPorts = [1099, 1100];
+        const slavePorts = [4001];
+        const serverPorts = [1099];
         for (let index = 0; index < config.slaveIps.length; index++) {
             console.log("slaveIps[index]: ", config.slaveIps[index]);
-            const slavePort = slavePorts[index];
-            const serverPort = serverPorts[index];
+            const slavePort = slavePorts[0];
+            const serverPort = serverPorts[0];
             console.log(`Processing slave ${index + 1} of ${config.slaveIps.length}`);
             await new Promise((resolve, reject) => {
                 startJMeterSlave.startJMeterSlave(config.slaveIps[index], serverPort, slavePort, (err) => {
