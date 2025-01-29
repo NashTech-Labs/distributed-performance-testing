@@ -1,15 +1,17 @@
+require('../utility/otel');
 const { Client } = require('ssh2');
 const config = require('../../config/config'); 
+const logger = require('../utility/logger'); 
 
 function executeCommand(ip, command, callback) {
     const conn = new Client();
     conn.on('ready', () => {
-        console.log(`Connected to ${ip}`);
+        logger.info(`Connected to ${ip}`);
         // Explicitly set the PATH for non-interactive sessions
         const pathCommand = `export PATH=\$PATH:${config.jmeterDir}/bin; ${command}`;
         conn.exec(pathCommand, (err, stream) => {
             if (err) {
-                console.error(`Error executing command on ${ip}:`, err);
+                logger.error(`Error executing command on ${ip}:`, err);
                 if (callback && typeof callback === 'function') {
                     callback(err, null);  // Only call callback if it's a function
                 }
@@ -25,11 +27,11 @@ function executeCommand(ip, command, callback) {
             }).on('stderr', (data) => {
                 errorOutput += data;
             }).on('close', (code, signal) => {
-                console.log(`Command executed on ${ip}: ${command}`);
+                logger.info(`Command executed on ${ip}: ${command}`);
                 if (errorOutput) {
-                    console.error(`Error on ${ip}: ${errorOutput}`);
+                    logger.error(`Error on ${ip}: ${errorOutput}`);
                 }
-                console.log(output);
+                logger.info(output);
 
                 // Close the connection after command execution
                 conn.end();

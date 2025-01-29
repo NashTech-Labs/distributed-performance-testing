@@ -1,13 +1,15 @@
+require('./utility/otel'); // Initialize OpenTelemetry
 const config = require('../config/config');
 const installation = require('./installation/installation');
 const updateJMeterProperties = require('./remote/updateJmeterProperties');
 const startJMeterSlave = require('./remote/startJmeterSlave');
 const configureMaster = require('./remote/configureMaster');
 const runTestsOnSlaves = require('./remote/runTestsOnSlaves') ;
+const logger = require('./utility/logger');
 
 async function run() {
     try {
-        console.log('Checking Java installation on master...');
+        logger.info('Checking Java installation on master...');
         const masterJavaInstalled = await new Promise((resolve, reject) => {
             installation.checkJava(config.masterIp, (err, result) => {
                 if (err) return reject(err);
@@ -15,19 +17,18 @@ async function run() {
             });
         });
         if (!masterJavaInstalled) {
-            console.log('Installing Java on master...');
+            logger.info('Installing Java on master...');
             await new Promise((resolve, reject) => {
                 installation.installJava(config.masterIp, (err) => {
                     if (err) return reject(err);
-                    console.log('Java installed on master.');
                     resolve();
                 });
             });
         } else {
-            console.log('Java is already installed on master.');
+            logger.info('Java is already installed on master.');
         }
 
-        console.log('Checking JMeter installation on master...');
+        logger.info('Checking JMeter installation on master...');
         const masterInstalled = await new Promise((resolve, reject) => {
             installation.checkJMeter(config.masterIp, (err, result) => {
                 if (err) return reject(err);
@@ -36,19 +37,19 @@ async function run() {
         });
 
         if (!masterInstalled) {
-            console.log('Installing JMeter on master...');
+            logger.info('Installing JMeter on master...');
             await new Promise((resolve, reject) => {
                 installation.installJMeter(config.masterIp, config.jmeterVersion, (err) => {
                     if (err) return reject(err);
-                    console.log('JMeter installed on master.');
+                    logger.info('JMeter installed on master.');
                     resolve();
                 });
             });
         } else {
-            console.log('JMeter is already installed on master.');
+            logger.info('JMeter is already installed on master.');
         }
 
-        console.log('Checking Java installation on slaves...');
+        logger.info('Checking Java installation on slaves...');
         for (const slaveIp of config.slaveIps) {
             const slaveJavaInstalled = await new Promise((resolve, reject) => {
                 installation.checkJava(slaveIp, (err, result) => {
@@ -58,20 +59,19 @@ async function run() {
             });
 
             if (!slaveJavaInstalled) {
-                console.log(`Installing Java on slave: ${slaveIp}...`);
+                logger.info(`Installing Java on slave: ${slaveIp}...`);
                 await new Promise((resolve, reject) => {
                     installation.installJava(slaveIp, (err) => {
                         if (err) return reject(err);
-                        console.log(`Java installed on slave: ${slaveIp}.`);
                         resolve();
                     });
                 });
             } else {
-                console.log(`Java is already installed on slave: ${slaveIp}.`);
+                logger.info(`Java is already installed on slave: ${slaveIp}.`);
             }
         }
 
-        console.log('Checking JMeter installation on slaves...');
+        logger.info('Checking JMeter installation on slaves...');
         for (const slaveIp of config.slaveIps) {
             const installed = await new Promise((resolve, reject) => {
                 installation.checkJMeter(slaveIp, (err, result) => {
@@ -81,57 +81,56 @@ async function run() {
             });
 
             if (!installed) {
-                console.log(`Installing JMeter on slave: ${slaveIp}...`);
+                logger.info(`Installing JMeter on slave: ${slaveIp}...`);
                 await new Promise((resolve, reject) => {
                     installation.installJMeter(slaveIp, config.jmeterVersion, (err) => {
                         if (err) return reject(err);
-                        console.log(`JMeter installed on slave: ${slaveIp}.`);
                         resolve();
                     });
                 });
             } else {
-                console.log(`JMeter is already installed on slave: ${slaveIp}.`);
+                logger.info(`JMeter is already installed on slave: ${slaveIp}.`);
             }
         }
 
-        console.log('Configuring master with slave IPs...');
+        logger.info('Configuring master with slave IPs...');
         await new Promise((resolve, reject) => {
             configureMaster(config.masterIp, config.slaveIps, (err) => {
                 if (err) return reject(err);
-                console.log('Master configured with slave IPs.');
+                logger.info('Master configured with slave IPs.');
                 resolve();
             });
         });
 
         // Update jmeter.properties on master and slaves
-        console.log('Updating jmeter.properties on master...');
+        logger.info('Updating jmeter.properties on master...');
         await new Promise((resolve, reject) => {
             updateJMeterProperties.updateJMeterProperties(config.masterIp, (err) => {
                 if (err) return reject(err);
-                console.log('jmeter.properties updated on master.');
+                logger.info('jmeter.properties updated on master.');
                 resolve();
             });
         });
 
         for (const slaveIp of config.slaveIps) {
-            console.log(`Updating jmeter.properties on slave: ${slaveIp}...`);
+            logger.info(`Updating jmeter.properties on slave: ${slaveIp}...`);
             await new Promise((resolve, reject) => {
                 updateJMeterProperties.updateJMeterProperties(slaveIp, (err) => {
                     if (err) return reject(err);
-                    console.log(`jmeter.properties updated on slave: ${slaveIp}.`);
+                    logger.info(`jmeter.properties updated on slave: ${slaveIp}.`);
                     resolve();
                 });
             });
         }
 
-        console.log('Starting JMeter slaves...');
+        logger.info('Starting JMeter slaves...');
         const slavePorts = [4001];
         const serverPorts = [1099];
         for (let index = 0; index < config.slaveIps.length; index++) {
-            console.log("slaveIps[index]: ", config.slaveIps[index]);
+            logger.info("slaveIps[index]: ", config.slaveIps[index]);
             const slavePort = slavePorts[0];
             const serverPort = serverPorts[0];
-            console.log(`Processing slave ${index + 1} of ${config.slaveIps.length}`);
+            logger.info(`Processing slave ${index + 1} of ${config.slaveIps.length}`);
             await new Promise((resolve, reject) => {
                 startJMeterSlave.startJMeterSlave(config.slaveIps[index], serverPort, slavePort, (err) => {
                     if (err) return reject(err);
@@ -140,16 +139,16 @@ async function run() {
             });
         }
 
-        console.log('Running tests on slaves via master...');
+        logger.info('Running tests on slaves via master...');
         await new Promise((resolve, reject) => {
             runTestsOnSlaves.runTestsOnSlaves(config.masterIp, (err) => {
                 if (err) return reject(err);
-                console.log('Tests started on slaves via master.');
+                logger.info('Tests started on slaves via master.');
                 resolve();
             });
         });
 
-        console.log('Execution completed successfully!');
+        logger.info('Execution completed successfully!');
     } catch (error) {
         console.error('Error during execution:', error);
     }
