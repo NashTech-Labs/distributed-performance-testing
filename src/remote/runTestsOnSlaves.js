@@ -7,7 +7,8 @@ const logger = require('../utility/logger');
 function runTestsOnSlaves(ip, callback) {
     const threadPerSlave = calculateSlaveThreads();
     logger.info("threadPerSlave : ", threadPerSlave)
-    const command = `${config.jmeterDir}/bin/jmeter -n -r -t ${config.testPlanPath} -l ${config.resultPath} -GtotalThreads=${threadPerSlave}`;
+    const command = `${config.jmeterDir}/bin/jmeter -n -r -t ${config.testPlanPath} -l ${config.resultPath} -GtotalThreads=${threadPerSlave} -Jlog_level.jmeter=DEBUG
+    -Jinfluxdb.ip=${config.masterIp} -Jinfluxdb.bucket=${config.influxDbBucket} -Jinfluxdb.token=${config.influxDbToken}`;
     executeCommand(ip, command, callback);
 }
 
