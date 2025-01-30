@@ -6,6 +6,7 @@ const startJMeterSlave = require('./remote/startJmeterSlave');
 const configureMaster = require('./remote/configureMaster');
 const runTestsOnSlaves = require('./remote/runTestsOnSlaves') ;
 const logger = require('./utility/logger');
+const installInfluxDB = require('./installation/influxDatabaseInstallation');
 
 async function run() {
     try {
@@ -48,6 +49,44 @@ async function run() {
         } else {
             logger.info('JMeter is already installed on master.');
         }
+
+        logger.info('InfluxDB installation on master...');
+        await new Promise((resolve, reject) => {
+            installInfluxDB.installInfluxDB(config.masterIp, (err, result) => {
+                if (err) {
+                    console.error('Error:', err);
+                    return reject(err); // reject on error
+                } else {
+                    console.log('Result:', result);
+                    resolve(); // resolve when successful
+                }
+            });
+        });
+
+        logger.info('InfluxDB starting on master...');
+        await new Promise((resolve, reject) => {
+            installInfluxDB.startInfluxDBService(config.masterIp, (err, result) => {
+                if (err) {
+                    console.error('Error:', err);
+                    return reject(err); // reject on error
+                } else {
+                    console.log('Result:', result);
+                    resolve(); // resolve when successful
+                }
+            });
+        });
+
+        /*await new Promise((resolve, reject) => {
+            installInfluxDB.createJMeterDatabase(config.masterIp, (err, result) => {
+                if (err) {
+                    console.error('Error:', err);
+                    return reject(err); // reject on error
+                } else {
+                    console.log('Result:', result);
+                    resolve(); // resolve when successful
+                }
+            });
+        });*/
 
         logger.info('Checking Java installation on slaves...');
         for (const slaveIp of config.slaveIps) {

@@ -10,5 +10,10 @@ module.exports = {
     resultPath: process.env.RESULT_PATH,
     username: process.env.SSH_USERNAME,
     password: process.env.SSH_PASSWORD,
-    numberOfThreads: process.env.NUMBER_OF_THREADS
+    numberOfThreads: process.env.NUMBER_OF_THREADS,
+    influxDbUser: process.env.INFLUXDB_ADMIN_USER,
+    influxDbPassword: process.env.INFLUXDB_ADMIN_PASSWORD,
+    influxDbOrg: process.env.INFLUXDB_ORG,
+    influxDbBucket: process.env.INFLUXDB_BUCKET,
+    influxDbToken: process.env.INFLUXDB_TOKEN,
 };
