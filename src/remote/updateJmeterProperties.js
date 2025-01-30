@@ -1,4 +1,5 @@
 const executeCommand = require('../commands/executeCommand');
+const config = require('../../config/config'); 
 
 function updateJMeterProperties(ip, callback) {
     // const updateCommand = `
@@ -9,8 +10,8 @@ function updateJMeterProperties(ip, callback) {
     //     echo "java.rmi.server.hostname=${ip}" >> /opt/jmeter/bin/jmeter.properties
     // `;
     const updateCommand = `
-    echo "server.rmi.ssl.disable=true" >> /opt/jmeter/bin/jmeter.properties && \
-    echo "java.rmi.server.hostname=${ip}" >> /opt/jmeter/bin/jmeter.properties
+    echo "server.rmi.ssl.disable=true" >> ${config.jmeterDir}/bin/jmeter.properties && \
+    echo "java.rmi.server.hostname=${ip}" >> ${config.jmeterDir}/bin/jmeter.properties
 `;
     executeCommand(ip, updateCommand, callback);
 }

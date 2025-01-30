@@ -53,7 +53,7 @@ function installJMeter(ip, jmeterVersion, callback) {
         wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${jmeterVersion}.tgz -O /tmp/apache-jmeter-${jmeterVersion}.tgz && \
         tar -xvzf /tmp/apache-jmeter-${jmeterVersion}.tgz -C /opt && \
         rm /tmp/apache-jmeter-${jmeterVersion}.tgz && \
-        ln -s /opt/apache-jmeter-${jmeterVersion} /opt/jmeter && \
+        ln -s /opt/apache-jmeter-${jmeterVersion} ${config.jmeterDir} && \
         echo "JMeter installed successfully"
     `;
     executeCommand(ip, installCommand, callback);
