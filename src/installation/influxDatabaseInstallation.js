@@ -6,30 +6,60 @@ const util = require('util');
 const executeCommand = require('../commands/executeCommand');
 const executeBackgroundCommand = require('../commands/executeBackgroundCommand');
 
-function installInfluxDB(ip, callback) {
-    const installCommand = `
+// Function to check if InfluxDB is installed
+function checkInflux(ip, callback) {
+    const checkCommand = `which influx || echo "not found"`;
+    executeCommand(ip, checkCommand, (err, result) => {
+        if (err) {
+            return callback(err);
+        }
+        return callback(null, result.trim() !== 'not found'); // Returns true if installed, false otherwise
+    });
+}
+
+// Function to install InfluxDB if not installed
+async function installInfluxDB(ip, callback) {
+    try {
+        const influxInstalled = await new Promise((resolve, reject) => {
+            checkInflux(ip, (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
+            });
+        });
+
+        if (influxInstalled) {
+            return callback(null, "InfluxDB is already installed.");
+        }
+
+        const installCommand = `
+        # Remove old key if exists
+        sudo rm -rf /etc/apt/keyrings/influxdata-archive_compat.asc
+        
         # Add InfluxDB 2.x repository
-        sudo mkdir -p /etc/apt/keyrings && \
-        curl -fsSL https://repos.influxdata.com/influxdata-archive_compat.key | sudo tee /etc/apt/keyrings/influxdata-archive_compat.asc > /dev/null && \
-        echo "deb [signed-by=/etc/apt/keyrings/influxdata-archive_compat.asc] https://repos.influxdata.com/debian stable main" | sudo tee /etc/apt/sources.list.d/influxdata.list && \
-
-        # Update package lists
-        sudo apt-get update && \
-
-        # Install the latest stable version of InfluxDB (2.x)
-        sudo apt-get install -y influxdb2 influxdb2-cli && \
-
+        sudo mkdir -p /etc/apt/keyrings
+        curl -fsSL https://repos.influxdata.com/influxdata-archive_compat.key | sudo tee /etc/apt/keyrings/influxdata-archive_compat.asc > /dev/null
+        echo "deb [signed-by=/etc/apt/keyrings/influxdata-archive_compat.asc] https://repos.influxdata.com/debian stable main" | sudo tee /etc/apt/sources.list.d/influxdata.list
+        
+        # Update package lists and install InfluxDB
+        sudo apt-get update
+        sudo apt-get install -y influxdb2 influxdb2-cli
+        
         # Verify installed versions
-        influxd version && influx version && \
+        influxd version && influx version
 
         # Create initial admin user, org, and token
-        influx setup --username ${config.influxDbUser} --password ${config.influxDbPassword} --org ${config.influxDbOrg} --bucket ${config.influxDbBucket} --token ${config.influxDbToken}--force && \
+        influx setup --username ${config.influxDbUser} --password ${config.influxDbPassword} \\
+        --org ${config.influxDbOrg} --bucket ${config.influxDbBucket} \\
+        --token ${config.influxDbToken} --force
 
         # Verify initial setup and token
         influx auth list
-    `;
+        `;
 
-    executeCommand(ip, installCommand, callback);
+        executeCommand(ip, installCommand, callback);
+    } catch (err) {
+        callback(err);
+    }
 }
 
 function startInfluxDBService(ip, callback) {

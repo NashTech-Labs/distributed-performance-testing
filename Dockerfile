@@ -7,6 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     # echo "nameserver 8.8.8.8" > /etc/resolv.conf && \
     # apt-get update && \
+    apt-get install -y lsof && \
     apt-get install -y openssh-server sudo nano iputils-ping && \
     mkdir /var/run/sshd
 
