@@ -7,8 +7,10 @@ const logger = require('../utility/logger');
 function runTestsOnSlaves(ip, callback) {
     const threadPerSlave = calculateSlaveThreads();
     logger.info("threadPerSlave : ", threadPerSlave)
-    const command = `${config.jmeterDir}/bin/jmeter -n -r -t ${config.testPlanPath} -l ${config.resultPath} -GtotalThreads=${threadPerSlave} -Jlog_level.jmeter=DEBUG
-    -Jinfluxdb.ip=${config.masterIp} -Jinfluxdb.bucket=${config.influxDbBucket} -Jinfluxdb.token=${config.influxDbToken}`;
+    const command = `${config.jmeterDir}/bin/jmeter -n -r -t ${config.testPlanPath} -l ${config.resultPath} -GtotalThreads=${threadPerSlave} 
+    -Jip=${config.masterIp} -Jbucket=${config.influxDbBucket} -Jtoken=${config.influxDbToken} -Jlog_level.jmeter=DEBUG`;
+    console.log("COMMAND : ", `${config.jmeterDir}/bin/jmeter -n -r -t ${config.testPlanPath} -l ${config.resultPath} -GtotalThreads=${threadPerSlave} 
+        -Jip=${config.masterIp} -Jbucket=${config.influxDbBucket} -Jtoken=${config.influxDbToken} -Jlog_level.jmeter=DEBUG`);
     executeCommand(ip, command, callback);
 }
 
