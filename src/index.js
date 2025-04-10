@@ -50,7 +50,7 @@ async function run() {
             logger.info('JMeter is already installed on master.');
         }
 
-        logger.info('InfluxDB installation on master...');
+        /*logger.info('InfluxDB installation on master...');
         await new Promise((resolve, reject) => {
             installInfluxDB.installInfluxDB(config.masterIp, (err, result) => {
                 if (err) {
@@ -74,7 +74,7 @@ async function run() {
                     resolve(); // resolve when successful
                 }
             });
-        });
+        });*/
 
         /*await new Promise((resolve, reject) => {
             installInfluxDB.createJMeterDatabase(config.masterIp, (err, result) => {
@@ -187,6 +187,13 @@ async function run() {
             });
         });
 
+        logger.info('Creating HTML report...');
+        await new Promise((resolve, reject) => {
+            runTestsOnSlaves.createHtmlReport(config.masterIp, (err) => {
+                if (err) return reject(err);
+                resolve();
+            });
+        });
         logger.info('Execution completed successfully!');
     } catch (error) {
         console.error('Error during execution:', error);
