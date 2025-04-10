@@ -16,7 +16,7 @@ services:
       - ./test-files:/test-files
     networks:
       jmeter-net:
-        ipv4_address: 192.168.1.100
+        ipv4_address: 172.28.100.10
     ports:
       - "2222:22"
 
@@ -31,7 +31,7 @@ services:
       - JMETER_DIR=/opt/apache-jmeter-${JMETER_VERSION}
     networks:
       jmeter-net:
-        ipv4_address: 192.168.1.101
+        ipv4_address: 172.28.100.11
     ports:
       - "2223:22"
 
@@ -46,7 +46,7 @@ services:
       - JMETER_DIR=/opt/apache-jmeter-${JMETER_VERSION}
     networks:
       jmeter-net:
-        ipv4_address: 192.168.1.102
+        ipv4_address: 172.28.100.12
     ports:
       - "2224:22"
 
@@ -55,4 +55,4 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 192.168.1.0/24
+        - subnet: 172.28.100.0/24

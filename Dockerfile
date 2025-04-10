@@ -7,9 +7,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     # echo "nameserver 8.8.8.8" > /etc/resolv.conf && \
     # apt-get update && \
-    apt-get install -y lsof && \
-    apt-get install -y openssh-server sudo nano iputils-ping && \
-    mkdir /var/run/sshd
+    apt-get install -y lsof openssh-server sudo nano iputils-ping curl gnupg && \
+    mkdir -p /var/run/sshd
 
 # Modify SSH configuration for password authentication and root login
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
