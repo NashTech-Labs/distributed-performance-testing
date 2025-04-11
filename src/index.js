@@ -194,7 +194,18 @@ async function run() {
                 resolve();
             });
         });
-        logger.info('Execution completed successfully!');
+
+        logger.info('Copy jmeter reports...');
+        for (let index = 0; index < config.slaveIps.length; index++) {
+
+            await new Promise((resolve, reject) => {
+                runTestsOnSlaves.copyJmeterSlaveLogsToMaster(config.slaveIps[index], (err) => {
+                    if (err) return reject(err);
+                    resolve();
+                });
+            });
+        }
+        logger.info('Execution completed');
     } catch (error) {
         console.error('Error during execution:', error);
     }

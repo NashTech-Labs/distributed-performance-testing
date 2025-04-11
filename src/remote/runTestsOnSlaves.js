@@ -35,8 +35,8 @@ function calculateSlaveThreads() {
     
 }
 
-function copyJmeterSlaveLogsToMaster(ip, masterUsername, masterIp, callback) {
-    const remoteScpCommand = `scp ${config.jmeterDir}/bin/jmeter-server.log ${masterUsername}@${masterIp}:${config.resultPath}/${ip.replace(/\./g, '_')}-jmeter-server.log`;
+function copyJmeterSlaveLogsToMaster(ip, callback) {
+    const remoteScpCommand = `cp ${config.jmeterDir}/bin/jmeter-server.log ${config.resultPath}/jmeter_${ip}.log`;
     executeCommand(ip, remoteScpCommand, (err, result) => {
         if (err) {
             console.error(`Error copying log from slave ${ip} to master ${masterIp}:`, err);
