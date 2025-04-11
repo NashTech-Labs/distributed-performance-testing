@@ -29,6 +29,8 @@ services:
     environment:
       - JMETER_VERSION=${JMETER_VERSION}
       - JMETER_DIR=/opt/apache-jmeter-${JMETER_VERSION}
+    volumes:
+      - ./test-files:/test-files
     networks:
       jmeter-net:
         ipv4_address: 172.28.100.11
@@ -44,6 +46,8 @@ services:
     environment:
       - JMETER_VERSION=${JMETER_VERSION}
       - JMETER_DIR=/opt/apache-jmeter-${JMETER_VERSION}
+    volumes:
+      - ./test-files:/test-files
     networks:
       jmeter-net:
         ipv4_address: 172.28.100.12
