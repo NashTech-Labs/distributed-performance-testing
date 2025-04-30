@@ -1,8 +1,9 @@
 
 # Distributed Performance Testing Orchestrator
 
-DPTO is an accelerator template developed to facilitate the rapid deployment and scaling of distributed performance testing workflows. It works with Jmeter to distribute your load amongst multiple slaves, helping user with an automated setup and execution of their Jmeter tests in a master-slave architecture. 
 ---
+
+DPTO is an accelerator template developed to facilitate the rapid deployment and scaling of distributed performance testing workflows. It works with Jmeter to distribute your load amongst multiple slaves, helping user with an automated setup and execution of their Jmeter tests in a master-slave architecture. 
 
 ## 🚀 Features
 
