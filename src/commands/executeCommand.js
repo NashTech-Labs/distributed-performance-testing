@@ -45,8 +45,8 @@ function executeCommand(ip, command, callback) {
     }).connect({
         host: ip,
         port: 22,
-        username: 'root',  // Make sure to use the correct username
-        password: process.env.SSH_PASSWORD  // Use password from your environment variables
+        username: config.username,  // Make sure to use the correct username
+        password: config.password  // Use password from your environment variables
     });
 }
 
